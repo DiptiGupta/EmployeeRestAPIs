@@ -1,0 +1,13 @@
+name: build_push_dev_image
+on:
+  workflow_dispatch
+
+jobs:
+  prepare-build:
+    runs-on: ubuntu-latest
+    outputs:
+      IMAGE_TAG: ${{ steps.set_output.outputs.IMAGE_TAG }}
+    steps:
+      - name: Set IMAGE_TAG
+        id: set_output
+        run: echo IMAGE_TAG=$(echo ${GITHUB_SHA}) >> $GITHUB_OUTPUT
