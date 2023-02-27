@@ -1,17 +1,9 @@
 name: build_push_dev_image
 on:
   workflow_dispatch:
-    inputs:
-      k8s_namespace:
-        description: 'k8s namespace to update e.g. etl-dev-processor-check'
-        required: true
 
 env:
-  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-  NAMESPACE: ${{ github.event.inputs.k8s_namespace }}
   ECR_REPO_PATH: dev/import-processor
-  EKS_PROD_FILE: apps/import-processor/overlays/${{ github.event.inputs.k8s_namespace }}/deployment.yaml
-  APPLICATION: import-processor
 
 jobs:
   prepare-build:
