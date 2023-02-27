@@ -1,3 +1,0 @@
-name: build_and_push_dev_image
-on:
-  workflow_dispatch:
