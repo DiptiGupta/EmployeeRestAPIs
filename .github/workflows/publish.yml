@@ -39,7 +39,7 @@ jobs:
         id: git_diff
         if: $${{steps.fetch_git_tags.outputs.PREV_TAG != steps.fetch_git_tags.outputs.LATEST_TAG}}
         run: |
-          if ! git diff --name-only --exit-code ${{steps.fetch_git_tags.outputs.PREV_TAG}}  ${{steps.fetch_git_tags.outputs.LATEST_TAG}} -- src/main/proto; then
+          if git diff --name-only --exit-code ${{steps.fetch_git_tags.outputs.PREV_TAG}}  ${{steps.fetch_git_tags.outputs.LATEST_TAG}} -- src/main/proto; then
             echo "no need to publish proto jar since there is no difference!!"
             echo "SHOULD_PUBLISH=false" >> $GITHUB_OUTPUT
           else
