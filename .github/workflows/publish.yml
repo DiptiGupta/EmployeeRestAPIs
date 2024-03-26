@@ -49,7 +49,7 @@ jobs:
 
   publish:
     needs: [prepare-publish]
-    if: ${{needs.prepare-publish.outputs.SHOULD_PUBLISH}}
+    if: ${{needs.prepare-publish.outputs.SHOULD_PUBLISH == true}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
