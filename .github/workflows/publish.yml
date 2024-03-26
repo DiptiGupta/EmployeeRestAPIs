@@ -25,7 +25,8 @@ jobs:
         run: echo GIT_DIFF=$(git diff --name-only "$steps.fetch_tag.outputs.PREV_TAG" "$steps.fetch_tag.outputs.LATEST_TAG" -- src/main/proto) >> $GITHUB_OUTPUT
       - name: Compare diff
         run: |
-          echo $steps.fetch_tag.outputs.PREV_TAG
+          echo $(steps.fetch_tag.outputs.PREV_TAG)
+          echo $${{steps.fetch_tag.outputs.PREV_TAG}}
           if "$steps.fetch_tag.outputs.PREV_TAG" != '' &&  "$steps.git_diff.outputs.GIT_DIFF" == ''; then
             echo "There is no difference in proto"
           else 
