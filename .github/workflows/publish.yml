@@ -27,7 +27,7 @@ jobs:
       - name: Compare diff
         id: compare_diff
         if: ${{steps.fetch_tag.outputs.PREV_TAG != ''  && steps.git_diff.outputs.GIT_DIFF == ''}}
-        run: echo "should_publish=true" >> $GITHUB_OUTPUT
+        run: echo "should_publish=false" >> $GITHUB_OUTPUT
       - name: push image
         if: $${{steps.compare_diff.outputs.should_publish == 'true'}}
         run: echo "publish"
