@@ -27,9 +27,8 @@ jobs:
           git fetch --tags
           tags=$(git tag --sort=-committerdate | head -n 2)
           echo $tags
-          echo "$tags" | awk -F'\n' '{print $1}' 
-          read -d "\n" LATEST_TAG PREV_TAG <<<$tags
-          echo $tags
+          echo "$tags" | awk '{print $1}
+          echo "$tags" | awk '{print $2}
           echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_OUTPUT
           echo "Latest tag is ${LATEST_TAG}"
           echo "PREV_TAG=${PREV_TAG}" >> $GITHUB_OUTPUT
