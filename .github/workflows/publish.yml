@@ -26,11 +26,11 @@ jobs:
         run: |
           git fetch --tags
           tags=$(git tag --sort=-committerdate | head -n 2)
-          LATEST_TAG=$(echo "$tags" | awk '{print $1}')
+          LATEST_TAG=$(echo "$tags" | awk 'NR==1 {print}')
           echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_OUTPUT
           echo "Latest tag is ${LATEST_TAG}"
 
-          PREV_TAG=$(echo "$tags" | awk '{print $2}')
+          PREV_TAG=$(echo "$tags" | awk 'NR==2 {print}')
           echo "PREV_TAG=${PREV_TAG}" >> $GITHUB_OUTPUT
           echo "Previous tag is ${PREV_TAG}"
       - name: Check GitHub diff to confirm whether the build should be published or not
