@@ -40,8 +40,10 @@ jobs:
         if: $${{steps.fetch_git_tags.outputs.PREV_TAG != steps.fetch_git_tags.outputs.LATEST_TAG}}
         run: |
           if ! git diff --name-only --exit-code ${{steps.fetch_git_tags.outputs.PREV_TAG}}  ${{steps.fetch_git_tags.outputs.LATEST_TAG}} -- src/main/proto; then
+            echo " there are differences"
             echo "PROTO_GIT_DIFF=true" >> $GITHUB_OUTPUT
           else
+            echo " there are no differences"
             echo "PROTO_GIT_DIFF=false" >> $GITHUB_OUTPUT
           fi
       - name: Check whether build should publish or not
