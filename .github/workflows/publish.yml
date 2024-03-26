@@ -35,9 +35,11 @@ jobs:
           echo "Previous tag is ${PREV_TAG}"
       - name: Check GitHub diff to confirm whether the build should be published or not
         id: git_diff
-        if: $${{steps.fetch_git_tags.outputs.PREV_TAG != ''}}
         run: |
-          if git diff --name-only --exit-code ${{steps.fetch_git_tags.outputs.PREV_TAG}}  ${{steps.fetch_git_tags.outputs.LATEST_TAG}} -- src/main/proto; then
+          if [ -z "${{steps.fetch_git_tags.outputs.PREV_TAG}} ]; then
+            echo "Will publish proto jar since this is first release!!"
+            echo "SHOULD_PUBLISH=true" >> $GITHUB_OUTPUT
+          elif git diff --name-only --exit-code ${{steps.fetch_git_tags.outputs.PREV_TAG}}  ${{steps.fetch_git_tags.outputs.LATEST_TAG}} -- src/main/proto; then
             echo "No need to publish proto jar since there is no difference!!"
             echo "SHOULD_PUBLISH=false" >> $GITHUB_OUTPUT
           else
