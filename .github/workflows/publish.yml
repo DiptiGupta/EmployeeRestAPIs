@@ -28,7 +28,7 @@ jobs:
       - name: Get last two GITHUB tags to compare differences
         id: fetch_git_tags
         run: |
-          git fetch --tags 
+          git fetch --tags --always
           LATEST_TAG=$(git describe --abbrev=0 --tags `git rev-list --tags --max-count=1`)
           echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_OUTPUT
           echo "Latest tag is ${LATEST_TAG}"
