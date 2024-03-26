@@ -49,6 +49,8 @@ jobs:
           if [ -z "$steps.git_diff.outputs.PROTO_GIT_DIFF" ]; then
             echo "no need to publish proto jar since there is no difference!!"
             echo "SHOULD_PUBLISH=false" >> $GITHUB_OUTPUT
+          else
+            echo "will publish proto jar since there are some difference!!"
           fi
 
   publish:
