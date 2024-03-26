@@ -39,7 +39,7 @@ jobs:
         id: git_diff
         if: $${{steps.fetch_git_tags.outputs.PREV_TAG != steps.fetch_git_tags.outputs.LATEST_TAG}}
         run: |
-          PROTO_GIT_DIFF=$(git diff --name-only  ${{steps.fetch_git_tags.outputs.PREV_TAG}}  ${{steps.fetch_git_tags.outputs.LATEST_TAG}} -- src/main/proto)
+          PROTO_GIT_DIFF=$(git diff --name-only --quiet ${{steps.fetch_git_tags.outputs.PREV_TAG}}  ${{steps.fetch_git_tags.outputs.LATEST_TAG}} -- src/main/proto)
           echo "proto git diff is:$PROTO_GIT_DIFF:"
           echo "PROTO_GIT_DIFF=${PROTO_GIT_DIFF}" >> $GITHUB_OUTPUT
       - name: Check whether build should publish or not
