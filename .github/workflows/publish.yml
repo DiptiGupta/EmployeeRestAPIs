@@ -36,7 +36,7 @@ jobs:
       - name: Check GitHub diff to confirm whether the build should be published or not
         id: git_diff
         run: |
-          if [ -z "${{steps.fetch_git_tags.outputs.PREV_TAG}} ]; then
+          if [ -z "${{steps.fetch_git_tags.outputs.PREV_TAG}}" ]; then
             echo "Will publish proto jar since this is first release!!"
             echo "SHOULD_PUBLISH=true" >> $GITHUB_OUTPUT
           elif git diff --name-only --exit-code ${{steps.fetch_git_tags.outputs.PREV_TAG}}  ${{steps.fetch_git_tags.outputs.LATEST_TAG}} -- src/main/proto; then
