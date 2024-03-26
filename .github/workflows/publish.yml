@@ -23,14 +23,14 @@ jobs:
       - name: GET diff between TAGS
         id: git_diff
         if: $${{ steps.fetch_tag.outputs.PREV_TAG != '' }}
-        run: echo GIT_DIFF=$(git diff --name-only ${steps.fetch_tag.outputs.PREV_TAG} ${steps.fetch_tag.outputs.LATEST_TAG} -- src/main/proto) >> $GITHUB_OUTPUT
+        run: echo GIT_DIFF=$(git diff --name-only ${{steps.fetch_tag.outputs.PREV_TAG}} ${{steps.fetch_tag.outputs.LATEST_TAG}} -- src/main/proto) >> $GITHUB_OUTPUT
       - name: Compare diff
-        run: |
-          if steps.fetch_tag.outputs.PREV_TAG != ''  && steps.git_diff.outputs.GIT_DIFF == ''; then
-            echo "There is no difference in proto"
-          else 
-            echo "publish"
-          fi
+        id: compare_diff
+        if: ${{steps.fetch_tag.outputs.PREV_TAG != ''  && steps.git_diff.outputs.GIT_DIFF == ''}}
+        run: echo "should_publish=true" >> $GITHUB_OUTPUT
+      - name: push image
+        if: $${{steps.compare_diff.outputs.should_publish == 'true'}}
+        run: echo "publish"
 
   
         
