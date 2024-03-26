@@ -18,7 +18,8 @@ jobs:
         id: fetch_tag
         run: |
          echo LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`) >> $GITHUB_OUTPUT
-         echo "latest tag is $LATEST_TAG"
+         echo "$(git describe --tags `git rev-list --tags --max-count=1)
+         echo "$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)"
          echo PREV_TAG=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`) >> $GITHUB_OUTPUT
           echo "prev tag is $PREV_TAG"
       - name: GET diff between TAGS
@@ -27,7 +28,7 @@ jobs:
         run: echo GIT_DIFF=$(git diff --name-only ${{steps.fetch_tag.outputs.PREV_TAG}} ${{steps.fetch_tag.outputs.LATEST_TAG}} -- src/main/proto) >> $GITHUB_OUTPUT
       - name: Compare diff
         run: |
-          if '${{steps.fetch_tag.outputs.PREV_TAG}}' != '' &&  '${{steps.git_diff.outputs.GIT_DIFF}}' == ''; then
+          if ${{steps.fetch_tag.outputs.PREV_TAG != ''}}  && ${{steps.git_diff.outputs.GIT_DIFF == ''}; then
             echo "There is no difference in proto"
           else 
             echo "publish"
