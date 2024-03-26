@@ -49,6 +49,7 @@ jobs:
           proto_git_diff="${{steps.git_diff.outputs.PROTO_GIT_DIFF}}"
           if $prev_tag != $latest_tag && proto_git_diff == ''; then
             echo "SHOULD_PUBLISH=false" >> $GITHUB_OUTPUT
+          fi
 
   publish:
     needs: [prepare-publish]
