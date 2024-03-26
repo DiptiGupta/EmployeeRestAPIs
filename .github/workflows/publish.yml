@@ -30,7 +30,7 @@ jobs:
         run: echo "should_publish=false" >> $GITHUB_OUTPUT
       - name: push image
         if: $${{steps.compare_diff.outputs.should_publish == 'true'}}
-        run: echo "publish"
+        run: echo "$${{steps.compare_diff.outputs.should_publish}} publish"
 
   
         
