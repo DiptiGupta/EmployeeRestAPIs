@@ -22,10 +22,6 @@ jobs:
           exit 1
 
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.BEBIT_MACHINE_GITHUB_TOKEN }}
-          fetch-depth: 0
-          submodules: recursive
 
       - name: Get last two GITHUB tags to compare differences
         id: fetch_git_tags
