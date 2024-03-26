@@ -42,7 +42,7 @@ jobs:
       - name: Check whether build should publish or not
         id: should_publish
         run: |
-          if [[ $steps.fetch_git_tags.outputs.PREV_TAG != $$steps.fetch_git_tags.outputs.LATEST_TAG && $steps.git_diff.outputs.PROTO_GIT_DIFF != '' ]]; then
+          if [[ $steps.fetch_git_tags.outputs.PREV_TAG != $steps.fetch_git_tags.outputs.LATEST_TAG && $steps.git_diff.outputs.PROTO_GIT_DIFF != '' ]]; then
             echo "SHOULD_PUBLISH=true" >> $GITHUB_OUTPUT
             echo " true?"
           fi
