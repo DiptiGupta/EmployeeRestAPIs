@@ -34,8 +34,8 @@ jobs:
       - name: GET GITHUB differences for proto files
         id: git_diff
         run: |
-          prev_tag="$(steps.fetch_git_tags.outputs.PREV_TAG)"
-          latest_tag="$(steps.fetch_git_tags.outputs.LATEST_TAG)"
+          prev_tag="${{steps.fetch_git_tags.outputs.PREV_TAG}}"
+          latest_tag=$steps.fetch_git_tags.outputs.LATEST_TAG
           if $prev_tag != $latest_tag; then
             PROTO_GIT_DIFF=$(git diff --name-only  $prev_tag  $latest_tag -- src/main/proto)
             echo PROTO_GIT_DIFF
