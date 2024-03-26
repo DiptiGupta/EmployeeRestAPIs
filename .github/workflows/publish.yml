@@ -13,7 +13,7 @@ jobs:
   prepare-publish:
     runs-on: ubuntu-latest
     outputs:
-      SHOULD_PUBLISH: ${{ steps.should_publish.outputs.SHOULD_PUBLISH }}
+      SHOULD_PUBLISH: ${{ steps.git_diff.outputs.SHOULD_PUBLISH }}
     steps:
 
       - uses: actions/checkout@v4
