@@ -48,7 +48,7 @@ jobs:
         id: should_publish
         if: $${{steps.fetch_git_tags.outputs.PREV_TAG != steps.fetch_git_tags.outputs.LATEST_TAG}}
         run: |
-          if [ $steps.git_diff.outputs.PROTO_GIT_DIFF]; then
+          if [ "$steps.git_diff.outputs.PROTO_GIT_DIFF" == true]; then
             echo "no need to publish proto jar since there is no difference!!"
             echo "SHOULD_PUBLISH=false" >> $GITHUB_OUTPUT
           else
