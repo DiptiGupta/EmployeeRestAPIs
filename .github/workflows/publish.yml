@@ -2,6 +2,7 @@ name: Publish package to GitHub Packages
 on:
   release:
     types: [released]
+
   workflow_dispatch:
     inputs:
       version:
@@ -9,34 +10,65 @@ on:
         required: true
 
 jobs:
+  prepare-publish:
+    runs-on: ubuntu-latest
+    outputs:
+      SHOULD_PUBLISH: ${{ steps.should_publish.outputs.SHOULD_PUBLISH }}
+    steps:
+      - name: check branch for release
+        if: ${{ github.event_name == 'release' && github.event.release.target_commitish != 'master'}}
+        run: |
+          echo "we need to use master branch for release."
+          exit 1
+
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.BEBIT_MACHINE_GITHUB_TOKEN }}
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Get last two GITHUB tags to compare differences
+        id: fetch_git_tags
+        run: |
+          git fetch --tags 
+          LATEST_TAG=$(git describe --abbrev=0 --tags `git rev-list --tags --max-count=1`)
+          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_OUTPUT
+          PREV_TAG=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
+          echo "PREV_TAG=${PREV_TAG}" >> $GITHUB_OUTPUT>> $GITHUB_OUTPUT
+      - name: GET GITHUB differences for proto files
+        id: git_diff
+        run: |
+          prev_tag="${{steps.fetch_git_tags.outputs.PREV_TAG}}"
+          latest_tag="${{steps.fetch_git_tags.outputs.LATEST_TAG}}"
+          if $prev_tag != $latest_tag; then
+            PROTO_GIT_DIFF=$(git diff --name-only  $prev_tag  $latest_tag -- src/main/proto)
+            echo PROTO_GIT_DIFF
+            echo "PROTO_GIT_DIFF=${PROTO_GIT_DIFF}" >> $GITHUB_OUTPUT
+          fi
+      - name: Check whether build should publish or not
+        id: should_publish
+        run: |
+          prev_tag="${{steps.fetch_git_tags.outputs.PREV_TAG}}"
+          latest_tag="${{steps.fetch_git_tags.outputs.LATEST_TAG}}"
+          proto_git_diff="${{steps.git_diff.outputs.PROTO_GIT_DIFF}}"
+          if $prev_tag != $latest_tag && proto_git_diff == ''; then
+            echo "SHOULD_PUBLISH=false" >> $GITHUB_OUTPUT
+
   publish:
+    needs: [prepare-publish]
+    if: ${{needs.prepare-publish.outputs.SHOULD_PUBLISH}}
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v3
-      - name: Fetch tags
-        id: fetch_tag
-        run: |
-         git fetch --tags 
-         echo LATEST_TAG=$(git describe --abbrev=0 --tags `git rev-list --tags --max-count=1`) >> $GITHUB_OUTPUT
-         echo PREV_TAG=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`) >> $GITHUB_OUTPUT
-      - name: GET diff between TAGS
-        id: git_diff
-        if: $${{ steps.fetch_tag.outputs.PREV_TAG != steps.fetch_tag.outputs.LATEST_TAG }}
-        run: echo GIT_DIFF=$(git diff --name-only ${{steps.fetch_tag.outputs.PREV_TAG}} ${{steps.fetch_tag.outputs.LATEST_TAG}} -- src/main/proto) >> $GITHUB_OUTPUT
-      - name: Compare diff
-        id: compare_diff
-        if: ${{steps.fetch_tag.outputs.PREV_TAG != steps.fetch_tag.outputs.LATEST_TAG  && steps.git_diff.outputs.GIT_DIFF == ''}}
-        run: echo "should_publish=false" >> $GITHUB_OUTPUT
-      - name: push image
-        run: |
-           if ${{steps.compare_diff.outputs.should_publish}}; then
-             echo "publish"
-           else
-             echo "not publish"
-           fi
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'zulu'
+          cache: gradle
 
-  
-        
-         
-         
+
+  send-release-announcement:
+    needs: [publish]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set env for release
+        run: echo "RELEASE_VERSION"
