@@ -42,8 +42,7 @@ jobs:
         id: should_publish
         if: $${{ steps.fetch_git_tags.outputs.PREV_TAG != steps.fetch_git_tags.outputs.LATEST_TAG }}
         run: |
-          echo "echo: ${{steps.git_diff.outputs.PROTO_GIT_DIFF}}:"
-          if [[ $steps.git_diff.outputs.PROTO_GIT_DIFF != '' ]]; then
+          if [[ "$steps.git_diff.outputs.PROTO_GIT_DIFF" != "" ]]; then
             echo "SHOULD_PUBLISH=true" >> $GITHUB_OUTPUT
             echo " true?"
           fi
