@@ -10,7 +10,10 @@ jobs:
     steps:
       - name: Set IMAGE_TAG
         id: set_output
-        run: echo IMAGE_TAG=$(echo ${GITHUB_SHA}) >> $GITHUB_OUTPUT
+        run: |
+          echo IMAGE_TAG=$(echo ${GITHUB_SHA}) >> $GITHUB_OUTPUT
+          echo $(git describe --abbrev=0 --tags `git rev-list --tags --max-count=1`)
+          echo $(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
         
   build:
     needs: [prepare-build]
