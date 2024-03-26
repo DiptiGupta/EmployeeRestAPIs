@@ -29,8 +29,10 @@ jobs:
           git fetch --tags 
           LATEST_TAG=$(git describe --abbrev=0 --tags `git rev-list --tags --max-count=1`)
           echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_OUTPUT
+          echo "Latest tag is ${LATEST_TAG}"
           PREV_TAG=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
           echo "PREV_TAG=${PREV_TAG}" >> $GITHUB_OUTPUT>> $GITHUB_OUTPUT
+          echo "Previous tag is ${PREV_TAG}"
       - name: GET GITHUB differences for proto files
         id: git_diff
         if: $${{ steps.fetch_git_tags.outputs.PREV_TAG != steps.fetch_git_tags.outputs.LATEST_TAG }}
