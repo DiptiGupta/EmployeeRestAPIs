@@ -35,9 +35,9 @@ jobs:
         id: git_diff
         if: $${{ steps.fetch_git_tags.outputs.PREV_TAG != steps.fetch_git_tags.outputs.LATEST_TAG }}
         run: |
-            PROTO_GIT_DIFF=$(git diff --name-only  ${{steps.fetch_git_tags.outputs.PREV_TAG}}  ${{steps.fetch_git_tags.outputs.LATEST_TAG}} -- src/main/proto)
-            echo "proto git diff is:$PROTO_GIT_DIFF:"
-            echo "PROTO_GIT_DIFF=${PROTO_GIT_DIFF}" >> $GITHUB_OUTPUT
+          PROTO_GIT_DIFF=$(git diff --name-only  ${{steps.fetch_git_tags.outputs.PREV_TAG}}  ${{steps.fetch_git_tags.outputs.LATEST_TAG}} -- src/main/proto)
+          echo "proto git diff is:$PROTO_GIT_DIFF:"
+          echo "PROTO_GIT_DIFF=${PROTO_GIT_DIFF}" >> $GITHUB_OUTPUT
       - name: Check whether build should publish or not
         id: should_publish
         if: $${{ steps.fetch_git_tags.outputs.PREV_TAG != steps.fetch_git_tags.outputs.LATEST_TAG }}
@@ -52,16 +52,10 @@ jobs:
     if: ${{needs.prepare-publish.outputs.SHOULD_PUBLISH}}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: 'zulu'
-          cache: gradle
-
+      - uses: actions/checkout@v4
 
   send-release-announcement:
     needs: [publish]
     runs-on: ubuntu-latest
     steps:
-      - name: Set env for release
-        run: echo "RELEASE_VERSION"
+      - uses: actions/checkout@v4
