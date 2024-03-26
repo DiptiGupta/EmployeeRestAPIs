@@ -34,9 +34,7 @@ jobs:
       - name: GET GITHUB differences for proto files
         id: git_diff
         run: |
-          prev_tag="${{steps.fetch_git_tags.outputs.PREV_TAG}}"
-          latest_tag=$steps.fetch_git_tags.outputs.LATEST_TAG
-          if $prev_tag != $latest_tag; then
+          if [[ $steps.fetch_git_tags.outputs.PREV_TAG != $$steps.fetch_git_tags.outputs.LATEST_TAG ]]; then
             PROTO_GIT_DIFF=$(git diff --name-only  $prev_tag  $latest_tag -- src/main/proto)
             echo PROTO_GIT_DIFF
             echo "PROTO_GIT_DIFF=${PROTO_GIT_DIFF}" >> $GITHUB_OUTPUT
@@ -44,10 +42,7 @@ jobs:
       - name: Check whether build should publish or not
         id: should_publish
         run: |
-          prev_tag="${{steps.fetch_git_tags.outputs.PREV_TAG}}"
-          latest_tag=$steps.fetch_git_tags.outputs.LATEST_TAG
-          proto_git_diff=$steps.git_diff.outputs.PROTO_GIT_DIFF
-          if $prev_tag != $latest_tag && proto_git_diff == ''; then
+          if [[ $steps.fetch_git_tags.outputs.PREV_TAG != $$steps.fetch_git_tags.outputs.LATEST_TAG && $steps.git_diff.outputs.PROTO_GIT_DIFF != '' ]]; then
             echo "SHOULD_PUBLISH=false" >> $GITHUB_OUTPUT
           fi
 
