@@ -15,35 +15,32 @@ jobs:
     outputs:
       SHOULD_PUBLISH: ${{ steps.should_publish.outputs.SHOULD_PUBLISH }}
     steps:
-      - name: check branch for release
-        if: ${{ github.event_name == 'release' && github.event.release.target_commitish != 'master'}}
-        run: |
-          echo "we need to use master branch for release."
-          exit 1
 
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Get last two GITHUB tags to compare differences
+      - name: Get the latest two GitHub tags to compare differences
         id: fetch_git_tags
         run: |
-          LATEST_TAG=$(git describe --abbrev=0 --tags `git rev-list --tags --max-count=1`)
+          git fetch --tags
+          tags=$(git tag --sort=-committerdate | head -n 2)
+          echo $tags
+          read -d "\n" LATEST_TAG PREV_TAG <<<$tags
           echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_OUTPUT
           echo "Latest tag is ${LATEST_TAG}"
-          PREV_TAG=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
           echo "PREV_TAG=${PREV_TAG}" >> $GITHUB_OUTPUT
           echo "Previous tag is ${PREV_TAG}"
-      - name: Check GITHUB diff to confirm whether build should publish or not
+      - name: Check GitHub diff to confirm whether the build should be published or not
         id: git_diff
-        if: $${{steps.fetch_git_tags.outputs.PREV_TAG != steps.fetch_git_tags.outputs.LATEST_TAG}}
+        if: $${{steps.fetch_git_tags.outputs.PREV_TAG != ''}}
         run: |
           if git diff --name-only --exit-code ${{steps.fetch_git_tags.outputs.PREV_TAG}}  ${{steps.fetch_git_tags.outputs.LATEST_TAG}} -- src/main/proto; then
-            echo "no need to publish proto jar since there is no difference!!"
+            echo "No need to publish proto jar since there is no difference!!"
             echo "SHOULD_PUBLISH=false" >> $GITHUB_OUTPUT
           else
-            echo "will publish proto jar since there are some difference!!"
+            echo "Will publish proto jar since there are some differences!!"
             echo "SHOULD_PUBLISH=true" >> $GITHUB_OUTPUT
           fi
 
@@ -52,18 +49,13 @@ jobs:
     if: ${{needs.prepare-publish.outputs.SHOULD_PUBLISH == true}}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: 'zulu'
-          cache: gradle
+      - name: publish
+        run: echo "publish to slack"
+
 
   send-release-announcement:
     needs: [publish]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: 'zulu'
-          cache: gradle
+      - name: Post to a Slack channel
+        run: echo "slack announcement"
