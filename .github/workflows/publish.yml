@@ -36,14 +36,14 @@ jobs:
         run: |
           if [[ $steps.fetch_git_tags.outputs.PREV_TAG != $$steps.fetch_git_tags.outputs.LATEST_TAG ]]; then
             PROTO_GIT_DIFF=$(git diff --name-only  $prev_tag  $latest_tag -- src/main/proto)
-            echo PROTO_GIT_DIFF
+            echo $PROTO_GIT_DIFF
             echo "PROTO_GIT_DIFF=${PROTO_GIT_DIFF}" >> $GITHUB_OUTPUT
           fi
       - name: Check whether build should publish or not
         id: should_publish
         run: |
           if [[ $steps.fetch_git_tags.outputs.PREV_TAG != $$steps.fetch_git_tags.outputs.LATEST_TAG && $steps.git_diff.outputs.PROTO_GIT_DIFF != '' ]]; then
-            echo "SHOULD_PUBLISH=false" >> $GITHUB_OUTPUT
+            echo "SHOULD_PUBLISH=true" >> $GITHUB_OUTPUT
           fi
 
   publish:
