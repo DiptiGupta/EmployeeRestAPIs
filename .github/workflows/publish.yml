@@ -51,6 +51,7 @@ jobs:
             echo "SHOULD_PUBLISH=false" >> $GITHUB_OUTPUT
           else
             echo "will publish proto jar since there are some difference!!"
+            echo "SHOULD_PUBLISH=true" >> $GITHUB_OUTPUT
           fi
 
   publish:
