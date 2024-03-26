@@ -22,15 +22,19 @@ jobs:
          echo PREV_TAG=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`) >> $GITHUB_OUTPUT
       - name: GET diff between TAGS
         id: git_diff
-        if: $${{ steps.fetch_tag.outputs.PREV_TAG != '' }}
+        if: $${{ steps.fetch_tag.outputs.PREV_TAG != steps.fetch_tag.outputs.LATEST_TAG }}
         run: echo GIT_DIFF=$(git diff --name-only ${{steps.fetch_tag.outputs.PREV_TAG}} ${{steps.fetch_tag.outputs.LATEST_TAG}} -- src/main/proto) >> $GITHUB_OUTPUT
       - name: Compare diff
         id: compare_diff
-        if: ${{steps.fetch_tag.outputs.PREV_TAG != ''  && steps.git_diff.outputs.GIT_DIFF == ''}}
+        if: ${{steps.fetch_tag.outputs.PREV_TAG != steps.fetch_tag.outputs.LATEST_TAG  && steps.git_diff.outputs.GIT_DIFF == ''}}
         run: echo "should_publish=false" >> $GITHUB_OUTPUT
       - name: push image
-        if: $${{steps.compare_diff.outputs.should_publish == 'true'}}
-        run: echo "$${{steps.compare_diff.outputs.should_publish}} publish"
+        run: |
+           if $${{steps.compare_diff.outputs.should_publish == 'true'}}; then
+             echo "publish"
+           else
+             echo "not publish"
+           fi
 
   
         
